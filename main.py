@@ -33,12 +33,12 @@ rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
 title = "Feature Selection - Random Forest"
 
 #testing set
-#prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
-#plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-#performance_metric(prediction[0], prediction[1], x_data)
-
-#training set
-prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
+prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
 plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
 performance_metric(prediction[0], prediction[1], x_data)
+
+#training set
+#prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
+#plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+#performance_metric(prediction[0], prediction[1], x_data)
 

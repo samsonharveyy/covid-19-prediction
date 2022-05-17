@@ -42,12 +42,12 @@ def randomized_search_grid():
 def params_grid_search():
     #based from the best params output of randomized search cv
     param_grid = {
-        'bootstrap': [True],
-        'max_depth': [80, 90, 100],
-        'max_features': [2, 3],
-        'min_samples_leaf': [3, 4, 5],
-        'min_samples_split': [8, 10, 12],
-        'n_estimators': [100, 200, 500, 6000]
+        'bootstrap': [False],
+        'max_depth': [50, 100, 150],
+        'max_features': ['sqrt', 'log2'],
+        'min_samples_leaf': [2, 3, 5],
+        'min_samples_split': [2, 3, 5],
+        'n_estimators': [100, 1000, 1500]
     }
     return param_grid
 
@@ -107,8 +107,8 @@ def rf_model(x_train,y_train,x_test,y_test):
     #y_pred = rf_grid.best_estimator_.predict(x_test)
 
     #best params from Grid and Randomized Search CV
-    model = RandomForestRegressor(bootstrap=False, max_depth=130, max_features='sqrt', 
-                                min_samples_leaf=2, min_samples_split=2, n_estimators=900, random_state=0,
+    model = RandomForestRegressor(bootstrap=False, max_depth=150, max_features='log2', 
+                                min_samples_leaf=2, min_samples_split=5, n_estimators=100, random_state=0,
                                 verbose=2, n_jobs=-1)
     model.fit(x_train, np.ravel(y_train))
     y_pred = model.predict(x_test)
