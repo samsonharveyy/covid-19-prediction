@@ -1,4 +1,5 @@
 Scaling: Standard
+Train/Test Split: 80/20
 
 Best Feature Combination:
 'humidity', 'pm2.5', 'precip', 'o3', 'temp'

@@ -10,7 +10,7 @@ import math
 
 
 def split_data(x_data, y_data):
-    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.15, random_state=0)
     return x_train, x_test, y_train, y_test
 
 def evaluate(model, test_features, test_labels):
@@ -28,8 +28,8 @@ def randomized_search_grid():
     max_features = ['auto', 'sqrt', 'log2']
     max_depth = [int(x) for x in np.linspace(10, 200, num = 20)]
     max_depth.append(None)
-    min_samples_split = [2, 5, 10]
-    min_samples_leaf = [1, 2, 4]
+    min_samples_split = [2, 3, 5, 8, 10]
+    min_samples_leaf = [1, 2, 3, 4, 5, 8]
     bootstrap = [True, False]
     random_grid = {'n_estimators': n_estimators,
                 'max_features': max_features,
@@ -42,8 +42,8 @@ def randomized_search_grid():
 def params_grid_search():
     #based from the best params output of randomized search cv
     param_grid = {
-        'bootstrap': [False],
-        'max_depth': [50, 100, 150],
+        'bootstrap': [False, True],
+        'max_depth': [50, 70, 100],
         'max_features': ['sqrt', 'log2'],
         'min_samples_leaf': [2, 3, 5],
         'min_samples_split': [2, 3, 5],
@@ -102,16 +102,16 @@ def rf_model(x_train,y_train,x_test,y_test):
     #y_pred = rf_random.best_estimator_.predict(x_test)
 
     #Grid Search CV
-    #rf_grid = grid_search_CV(x_train, y_train, model)
-    #print(rf_grid.best_params_)
-    #y_pred = rf_grid.best_estimator_.predict(x_test)
+    rf_grid = grid_search_CV(x_train, y_train, model)
+    print(rf_grid.best_params_)
+    y_pred = rf_grid.best_estimator_.predict(x_test)
 
     #best params from Grid and Randomized Search CV
-    model = RandomForestRegressor(bootstrap=False, max_depth=150, max_features='log2', 
-                                min_samples_leaf=2, min_samples_split=5, n_estimators=100, random_state=0,
-                                verbose=2, n_jobs=-1)
-    model.fit(x_train, np.ravel(y_train))
-    y_pred = model.predict(x_test)
+    #model = RandomForestRegressor(bootstrap=True, max_depth=70, max_features='log2', 
+    #                            min_samples_leaf=2, min_samples_split=3, n_estimators=1500, random_state=0,
+    #                            verbose=2, n_jobs=-1)
+    #model.fit(x_train, np.ravel(y_train))
+    #y_pred = model.predict(x_test)
 
     #print("Base Accuracy: ", base_accuracy)
     #print("Random Accuracy: ", random_accuracy)

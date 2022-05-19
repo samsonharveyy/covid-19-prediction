@@ -6,13 +6,13 @@ import pandas as pd
 
 
 #read database
-data = pd.read_csv('datasets/centralized_database_old.csv')
-#data = pd.read_csv('datasets/centralized_database_new.csv')
+#data = pd.read_csv('datasets/centralized_database_old.csv')
+data = pd.read_csv('datasets/centralized_database_new.csv')
 
 #get input and output features
-#features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
-#x_data = data[features]
-x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
+features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
+x_data = data[features]
+#x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
 #x_data = data[['temp', 'humidity', 'pm2.5', 'precip', 'o3', 'temp']]
 y_data = data.iloc[:,13:].values
 
@@ -32,16 +32,16 @@ rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
 #feature_selection(rf_x_train, rf_y_train, features)
 
 
-title = "Feature Selection - Random Forest"
+title = "Random Forest Plot"
 
 
 #testing set
-#prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
-#plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-#performance_metric(prediction[0], prediction[1], x_data)
-
-#training set
-prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
+prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
 plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
 performance_metric(prediction[0], prediction[1], x_data)
+
+#training set
+#prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
+#plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+#erformance_metric(prediction[0], prediction[1], x_data)
 
