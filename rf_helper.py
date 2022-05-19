@@ -58,7 +58,7 @@ def feature_selection(x_train, y_train, features):
     #calculate feature importance
     importance = model.feature_importances_
     #for i, j in enumerate(importance):
-        #print('Feature: %0d, Score: %.5f' % (i,j))
+    #    print('Feature: %0d, Score: %.5f' % (i,j))
     #plt.bar([x for x in range(len(importance))], importance)
     #plt.show()
 
@@ -93,7 +93,7 @@ def rf_model(x_train,y_train,x_test,y_test):
     #y_pred = base_model.predict(x_test)
     base_accuracy = evaluate(base_model, x_test, y_test)
 
-    model = RandomForestRegressor()
+    model = RandomForestRegressor(random_state=0)
 
     #Randomized Search CV
     #rf_random = randomized_search_CV(x_train, y_train, model)
