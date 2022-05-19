@@ -88,12 +88,12 @@ def grid_search_CV(x_train, y_train, model):
 
 def rf_model(x_train,y_train,x_test,y_test):
     #base model for reference
-    base_model = RandomForestRegressor(n_estimators=100, random_state=0)
-    base_model.fit(x_train, np.ravel(y_train))
+    #base_model = RandomForestRegressor(n_estimators=100, random_state=0)
+    #base_model.fit(x_train, np.ravel(y_train))
     #y_pred = base_model.predict(x_test)
-    base_accuracy = evaluate(base_model, x_test, y_test)
+    #base_accuracy = evaluate(base_model, x_test, y_test)
 
-    model = RandomForestRegressor(random_state=0)
+    model = RandomForestRegressor()
 
     #Randomized Search CV
     #rf_random = randomized_search_CV(x_train, y_train, model)

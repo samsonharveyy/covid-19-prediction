@@ -1,0 +1,26 @@
+Best Feature Combination:
+'humidity', 'pm2.5', 'precip', 'o3', 'temp'
+
+Best Parameters:
+bootstrap=False, 
+max_depth=150, 
+max_features='log2', 
+min_samples_leaf=2, 
+min_samples_split=5, 
+n_estimators=100, 
+
+Performance - Training Set 
+MSE    :  0.11507875901249048
+RMSE   :  0.33923260310956327
+MAPE   :  0.380241929709979
+MAE    : 0.17443012521998583
+R2     : 0.8970969953715432
+ADJ R2 : 0.8956950470796023
+
+Performance Testing Set
+MSE    :  0.3667430323958024
+RMSE   :  0.605593124462128
+MAPE   :  1.1748397066124059
+MAE    : 0.46635752336939246
+R2     : 0.293839723438565
+ADJ R2 : 0.2537169804521199
