@@ -1,3 +1,5 @@
+Scaling: Standard
+
 Best Feature Combination:
 'humidity', 'pm2.5', 'precip', 'o3', 'temp'
 
@@ -10,10 +12,10 @@ min_samples_split=5,
 n_estimators=100, 
 
 Performance - Training Set 
-MSE    :  0.11507875901249048
-RMSE   :  0.33923260310956327
+MSE    :  0.11507875901249046
+RMSE   :  0.3392326031095632
 MAPE   :  0.380241929709979
-MAE    : 0.17443012521998583
+MAE    : 0.1744301252199858
 R2     : 0.8970969953715432
 ADJ R2 : 0.8956950470796023
 
