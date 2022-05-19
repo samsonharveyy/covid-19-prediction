@@ -102,16 +102,16 @@ def rf_model(x_train,y_train,x_test,y_test):
     #y_pred = rf_random.best_estimator_.predict(x_test)
 
     #Grid Search CV
-    rf_grid = grid_search_CV(x_train, y_train, model)
-    print(rf_grid.best_params_)
-    y_pred = rf_grid.best_estimator_.predict(x_test)
+    #rf_grid = grid_search_CV(x_train, y_train, model)
+    #print(rf_grid.best_params_)
+    #y_pred = rf_grid.best_estimator_.predict(x_test)
 
     #best params from Grid and Randomized Search CV
-    #model = RandomForestRegressor(bootstrap=True, max_depth=70, max_features='log2', 
-    #                            min_samples_leaf=2, min_samples_split=3, n_estimators=1500, random_state=0,
-    #                            verbose=2, n_jobs=-1)
-    #model.fit(x_train, np.ravel(y_train))
-    #y_pred = model.predict(x_test)
+    model = RandomForestRegressor(bootstrap=True, max_depth=70, max_features='log2', 
+                                min_samples_leaf=2, min_samples_split=3, n_estimators=1500, random_state=0,
+                                verbose=2, n_jobs=-1)
+    model.fit(x_train, np.ravel(y_train))
+    y_pred = model.predict(x_test)
 
     #print("Base Accuracy: ", base_accuracy)
     #print("Random Accuracy: ", random_accuracy)

@@ -13,7 +13,6 @@ data = pd.read_csv('datasets/centralized_database_new.csv')
 features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
 x_data = data[features]
 #x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
-#x_data = data[['temp', 'humidity', 'pm2.5', 'precip', 'o3', 'temp']]
 y_data = data.iloc[:,13:].values
 
 
@@ -43,5 +42,5 @@ performance_metric(prediction[0], prediction[1], x_data)
 #training set
 #prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
 #plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-#erformance_metric(prediction[0], prediction[1], x_data)
+#performance_metric(prediction[0], prediction[1], x_data)
 
