@@ -5,43 +5,49 @@ from sklearn.model_selection import TimeSeriesSplit
 import pandas as pd 
 
 
-#read database
-#data = pd.read_csv('datasets/centralized_database_old.csv')
-data = pd.read_csv('datasets/centralized_database_new.csv')
+def main_func():
 
-#get input and output features
-features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
-x_data = data[features]
-#x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
-y_data = data.iloc[:,12:].values
-print(y_data)
+  #read database
+  #data = pd.read_csv('datasets/centralized_database_old.csv')
+  data = pd.read_csv('datasets/centralized_database_new.csv')
 
-
-#transform data
-scaler = StandardScaler()
-x_data = scaler.fit_transform(x_data)
-y_data = scaler.fit_transform(y_data)
-
-#x_data = scaler.inverse_transform(x_data)
-#y_data = scaler.inverse_transform(y_data)
+  #get input and output features
+  features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
+  x_data = data[features]
+  #x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
+  y_data = data.iloc[:,12:].values
+  print(y_data)
 
 
+  #transform data
+  scaler = StandardScaler()
+  x_data = scaler.fit_transform(x_data)
+  y_data = scaler.fit_transform(y_data)
 
-#build and run model
-rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
-#feature_selection(rf_x_train, rf_y_train, features)
+  #x_data = scaler.inverse_transform(x_data)
+  #y_data = scaler.inverse_transform(y_data)
 
 
-title = "Random Forest Plot"
+
+  #build and run model
+  rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
+  #feature_selection(rf_x_train, rf_y_train, features)
 
 
-#testing set
-prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
-plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-performance_metric(prediction[0], prediction[1], x_data)
+  title = "Random Forest Plot"
 
-#training set
-#prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
-#plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-#performance_metric(prediction[0], prediction[1], x_data)
+
+  #testing set
+  prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
+  plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+  performance_metric(prediction[0], prediction[1], x_data)
+
+  return prediction[0],prediction[1]
+
+  #training set
+  #prediction = rf_model(rf_x_train, rf_y_train, rf_x_train, rf_y_train)
+  #plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+  #performance_metric(prediction[0], prediction[1], x_data)
+
+main_func()
 
