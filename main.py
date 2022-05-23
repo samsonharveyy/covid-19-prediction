@@ -13,7 +13,8 @@ data = pd.read_csv('datasets/centralized_database_new.csv')
 features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
 x_data = data[features]
 #x_data = data[['humidity', 'pm2.5', 'precip', 'o3', 'temp']]
-y_data = data.iloc[:,13:].values
+y_data = data.iloc[:,12:].values
+print(y_data)
 
 
 #transform data
