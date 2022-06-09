@@ -35,11 +35,14 @@ if st.checkbox("Show raw data"):
 indexes = data.index
 index_finder = data.index[data["date"]==pd.to_datetime(date)].tolist()
 index = index_finder[0]
+st.write(index_finder)
 
-
-np.random.seed(42)
-source = pd.DataFrame(np.cumsum(np.random.randn(100, 2), 0).round(2),
-                    columns=['actual', 'predicted'], index=pd.RangeIndex(100, name='date'))
+actual, predicted = main_func()
+output = pd.DataFrame(actual,predicted)
+output[0] = actual
+output[1] = predicted
+output.index = list(range(len(output)))
+source = pd.DataFrame(output.to_numpy(), columns=['actual', 'predicted'], index=pd.RangeIndex(len(actual), name='date'))
 source = source.reset_index().melt('date', var_name='category', value_name='cases')
 
 # Create a selection that chooses the nearest point & selects based on x-value
@@ -83,7 +86,7 @@ rules = alt.Chart(source).mark_rule(color='gray').encode(
 alt.layer(
     line, selectors, points, rules, text
 ).properties(
-    width=600, height=300
+    width=800, height=500
 )
 
 st.altair_chart(alt.layer(line, selectors, points, rules, text), use_container_width=True)

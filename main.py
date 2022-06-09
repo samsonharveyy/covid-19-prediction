@@ -24,8 +24,8 @@ def main_func():
   x_data = scaler.fit_transform(x_data)
   y_data = scaler.fit_transform(y_data)
 
-  #x_data = scaler.inverse_transform(x_data)
-  #y_data = scaler.inverse_transform(y_data)
+  x_data = scaler.inverse_transform(x_data)
+  y_data = scaler.inverse_transform(y_data)
 
 
 
