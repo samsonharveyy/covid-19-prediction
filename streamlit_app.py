@@ -5,13 +5,7 @@ import altair as alt
 from vega_datasets import data
 from main import main_func
 import datetime
-
-
-
-st.title('COVID-19 Cases Prediction')
-col_a, col_b = st.columns(2)
-col_a.metric("Projected number of cases", 98)
-col_b.subheader("Manila, Philippines")
+import time
 
 @st.cache
 def load_data():
@@ -21,15 +15,26 @@ def load_data():
   data['date'] = pd.to_datetime(data['date'])
   return data
 
+st.title('COVID-19 Cases Prediction')
+c1, c2 = st.columns(2)
+aqi = c1.metric("AQI", 52)
+date = c2.date_input("Date", datetime.date(2021, 1, 1), min_value=datetime.date(2020, 11, 25), max_value=datetime.date(2022, 5, 7))
+
+c3, c4 = st.columns(2)
+cases = c3.metric("Projected number of cases", 98)
+area = c4.subheader("Manila, Philippines")
+
 data_load_state = st.text("Fetching data...")
 data = load_data()
 data_load_state.text("Showing data:") 
 
-#if st.checkbox("Show raw data"):
-#  st.subheader("Raw data")
-#  st.write(data)
+if st.checkbox("Show raw data"):
+  st.subheader("Raw data")
+  st.write(data)
 
-#actual, predicted = main_func()
+indexes = data.index
+index_finder = data.index[data["date"]==pd.to_datetime(date)].tolist()
+index = index_finder[0]
 
 
 np.random.seed(42)
@@ -83,30 +88,69 @@ alt.layer(
 
 st.altair_chart(alt.layer(line, selectors, points, rules, text), use_container_width=True)
 
-st.caption("sampel sample sample")
 
-col_1, col_2 = st.columns([1, 1])
-col_1.metric("AQI", 52)
-col_2.date_input("Date", datetime.date(2021, 1, 1))
+#weather variables
+if index == 0:
+    temp_prev = 0
+    feelslike_prev = 0
+    windspeed_prev = 0
+    humidity_prev = 0
+    precip_prev = 0
+else:
+    temp_prev = round(data["temp"][index] - data["temp"][index-1], 2)
+    feelslike_prev = round(data["feelslike"][index] - data["feelslike"][index-1], 2)
+    windspeed_prev = round(data["windspeed"][index] - data["windspeed"][index-1], 2)
+    humidity_prev = round(data["humidity"][index] - data["humidity"][index-1], 2)
+    precip_prev = round(data["precip"][index] - data["precip"][index-1], 2)
+
+temp = data["temp"][index]
+feelslike = data["feelslike"][index]
+windspeed = data["windspeed"][index]
+humidity = data["humidity"][index]
+precip = data["precip"][index]
 
 
 st.subheader("Weather")
-col1, col2, col3, col4, col5 = st.columns(5)
-col1.metric("temperature", "70 °F", "1.2 °F")
-col2.metric("feelslike", "75 °F", "1.4 °F")
-col3.metric("windspeed", "9 mph", "-8%")
-col4.metric("humidity", "86%", "4%")
-col5.metric("precipitation", "0.0 mm", "0.0 mm")
+col1, col2, col3 = st.columns(3)
+col1.metric("temperature", str(temp)+" °C", str(temp_prev)+" °C")
+col2.metric("feelslike", str(feelslike) + " °C", str(feelslike_prev) + " °C")
+col3.metric("windspeed", str(windspeed) + " km/hr", str(windspeed_prev) + " km/hr")
+col4, col5 = st.columns(2)
+col4.metric("humidity", humidity, humidity_prev)
+col5.metric("precipitation", str(precip) + " mm", str(precip_prev) + " mm")
+
+#air quality variables
+if index == 0:
+    co_prev = 0
+    no2_prev = 0
+    o3_prev = 0
+    so2_prev = 0
+    pm25_prev = 0
+    pm10_prev = 0
+else:
+    co_prev = round(data["co"][index] - data["co"][index-1], 2)
+    no2_prev = round(data["no2"][index] - data["no2"][index-1], 2)
+    o3_prev = round(data["o3"][index] - data["o3"][index-1], 2)
+    so2_prev = round(data["so2"][index] - data["so2"][index-1], 2)
+    pm25_prev = round(data["pm2.5"][index] - data["pm2.5"][index-1], 2)
+    pm10_prev = round(data["pm10"][index] - data["pm10"][index-1], 2)
+
+co = round(data["co"][index], 2)
+no2 = round(data["no2"][index], 2)
+o3 = round(data["o3"][index], 2)
+so2 = round(data["so2"][index], 2)
+pm25 = round(data["pm2.5"][index], 2)
+pm10 = round(data["pm10"][index], 2)
 
 st.subheader("Air Quality")
 col6, col7, col8 = st.columns(3)
-col6.metric("co", "10 ug/m3", "-1.9 ug/m3")
-col7.metric("no2", "25 ug/m3", "-3.4 ug/m3")
-col8.metric("o3", "9 ug/m3", "8 ug/m3")
+col6.metric("co", str(co) + " ug/m3", str(co_prev) + " ug/m3")
+col7.metric("no2", str(no2) + " ug/m3", str(no2_prev) + " ug/m3")
+col8.metric("o3", str(o3) + " ug/m3", str(o3_prev) + " ug/m3")
 col9, col10, col11 = st.columns(3)
-col9.metric("so2", "36 ug/m3", "-4 ug/m3")
-col10.metric("pm2.5", "1.5 ug/m3", "2.0 ug/m3")
-col11.metric("pm10", "0.7 ug/m3", "-1.2 ug/m3")
+col9.metric("so2", str(so2) + " ug/m3", str(so2_prev) + " ug/m3")
+col10.metric("pm2.5", str(pm25) + " μg/m3", str(pm25_prev) + " μg/m3")
+col11.metric("pm10", str(pm10) + " μg/m3", str(pm10_prev) + " μg/m3")
 
 
 
