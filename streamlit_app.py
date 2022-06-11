@@ -3,9 +3,11 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from vega_datasets import data
-from main import main_func
+from random_forest import main_func
 import datetime
 import time
+from PIL import Image
+
 
 @st.cache
 def load_data():
@@ -17,32 +19,25 @@ def load_data():
 
 st.title('COVID-19 Cases Prediction')
 c1, c2 = st.columns(2)
-aqi = c1.metric("AQI", 52)
-date = c2.date_input("Date", datetime.date(2021, 1, 1), min_value=datetime.date(2020, 11, 25), max_value=datetime.date(2022, 5, 7))
+cases_header = c1.subheader("Projected Number of Cases")
+area = c2.subheader("Manila, Philippines")
 
 c3, c4 = st.columns(2)
-cases = c3.metric("Projected number of cases", 98)
-area = c4.subheader("Manila, Philippines")
+cases_value = c3.header("98")
+realtime_date = c4.header(datetime.datetime.now().date())
+st.caption("Disclaimer: Real time COVID-19 cases prediction for visualization purposes only. Gathers real time data from APIs and generates a prediction number based from the trained models using data from November 25, 2020 to May 7, 2022.")
+
+option = st.selectbox(
+     'Choose ML model for prediction on number of cases:',
+     ('Linear Regression', 'Polynomial Regression', 'Random Forest (recommended)'))
+
 
 data_load_state = st.text("Fetching data...")
 data = load_data()
 data_load_state.text("Showing data:") 
 
-if st.checkbox("Show raw data"):
-  st.subheader("Raw data")
-  st.write(data)
 
-indexes = data.index
-index_finder = data.index[data["date"]==pd.to_datetime(date)].tolist()
-index = index_finder[0]
-st.write(index_finder)
-
-actual, predicted = main_func()
-output = pd.DataFrame(actual,predicted)
-output[0] = actual
-output[1] = predicted
-output.index = list(range(len(output)))
-source = pd.DataFrame(output.to_numpy(), columns=['actual', 'predicted'], index=pd.RangeIndex(len(actual), name='date'))
+source = pd.DataFrame(data["cases"].to_numpy(), columns=['cases'], index=data['date'])
 source = source.reset_index().melt('date', var_name='category', value_name='cases')
 
 # Create a selection that chooses the nearest point & selects based on x-value
@@ -53,7 +48,6 @@ nearest = alt.selection(type='single', nearest=True, on='mouseover',
 line = alt.Chart(source).mark_line(interpolate='basis').encode(
     x='date:Q',
     y='cases:Q',
-    color='category:N'
 )
 
 # Transparent selectors across the chart. This is what tells us
@@ -92,6 +86,22 @@ alt.layer(
 st.altair_chart(alt.layer(line, selectors, points, rules, text), use_container_width=True)
 
 
+
+c5, c6 = st.columns(2)
+
+date = c6.date_input("Date", datetime.date(2021, 1, 1), min_value=datetime.date(2020, 11, 25), max_value=datetime.date(2022, 5, 7))
+indexes = data.index
+index_finder = data.index[data["date"]==pd.to_datetime(date)].tolist()
+index = index_finder[0]
+
+
+aqi_data = pd.read_csv('datasets/aqi_levels_manila.csv')
+aqi_level = aqi_data["aqi_level"][index]
+aqi = c5.subheader("Air Quality Index Level: ") 
+aqi_2 = c5.header(str(round(aqi_level, 2)))
+
+params_desc = st.caption("Showing historical air quality and weather data from November 25, 2020 to May 7, 2022 with corresponding trends from the previous day:")
+
 #weather variables
 if index == 0:
     temp_prev = 0
@@ -112,15 +122,6 @@ windspeed = data["windspeed"][index]
 humidity = data["humidity"][index]
 precip = data["precip"][index]
 
-
-st.subheader("Weather")
-col1, col2, col3 = st.columns(3)
-col1.metric("temperature", str(temp)+" °C", str(temp_prev)+" °C")
-col2.metric("feelslike", str(feelslike) + " °C", str(feelslike_prev) + " °C")
-col3.metric("windspeed", str(windspeed) + " km/hr", str(windspeed_prev) + " km/hr")
-col4, col5 = st.columns(2)
-col4.metric("humidity", humidity, humidity_prev)
-col5.metric("precipitation", str(precip) + " mm", str(precip_prev) + " mm")
 
 #air quality variables
 if index == 0:
@@ -145,15 +146,23 @@ so2 = round(data["so2"][index], 2)
 pm25 = round(data["pm2.5"][index], 2)
 pm10 = round(data["pm10"][index], 2)
 
-st.subheader("Air Quality")
-col6, col7, col8 = st.columns(3)
-col6.metric("co", str(co) + " ug/m3", str(co_prev) + " ug/m3")
-col7.metric("no2", str(no2) + " ug/m3", str(no2_prev) + " ug/m3")
-col8.metric("o3", str(o3) + " ug/m3", str(o3_prev) + " ug/m3")
-col9, col10, col11 = st.columns(3)
-col9.metric("so2", str(so2) + " ug/m3", str(so2_prev) + " ug/m3")
-col10.metric("pm2.5", str(pm25) + " μg/m3", str(pm25_prev) + " μg/m3")
-col11.metric("pm10", str(pm10) + " μg/m3", str(pm10_prev) + " μg/m3")
+col1, col2 = st.columns(2)
+col1.subheader("Weather")
+col1.metric("temperature", str(temp)+" °C", str(temp_prev)+" °C")
+col1.metric("feelslike", str(feelslike) + " °C", str(feelslike_prev) + " °C")
+col1.metric("windspeed", str(windspeed) + " km/hr", str(windspeed_prev) + " km/hr")
+col1.metric("humidity", humidity, humidity_prev)
+col1.metric("precipitation", str(precip) + " mm", str(precip_prev) + " mm")
+
+col2.subheader("Air Quality")
+col2.metric("co", str(co) + " ug/m3", str(co_prev) + " ug/m3")
+col2.metric("no2", str(no2) + " ug/m3", str(no2_prev) + " ug/m3")
+col2.metric("o3", str(o3) + " ug/m3", str(o3_prev) + " ug/m3")
+col2.metric("so2", str(so2) + " ug/m3", str(so2_prev) + " ug/m3")
+col2.metric("pm2.5", str(pm25) + " μg/m3", str(pm25_prev) + " μg/m3")
+col2.metric("pm10", str(pm10) + " μg/m3", str(pm10_prev) + " μg/m3")
 
 
+image = Image.open('assets/aqi_levels.png')
 
+st.image(image, caption='Air Quality Index Levels from OpenWeather')
