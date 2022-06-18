@@ -33,7 +33,7 @@ def preprocess_dataset(x_data,y_data):
     y_pred = scale.inverse_transform(y_pred)
     
     plot(y_test,y_pred)
-    performance_metric(y_test,y_pred)
+    performance_metric(x_data,y_test,y_pred)
 
 def curve_visualization(x_data,y_data,param,degree,title):
     x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.2,random_state=0)
@@ -86,7 +86,7 @@ def plot(y_test,y_pred):
     #plt.savefig(fig_name)
     plt.show()
 
-def performance_metric(y_test,y_pred):
+def performance_metric(x_data, y_test,y_pred):
         from sklearn.metrics import mean_squared_error
         MSE_val = mean_squared_error(y_test, y_pred)
         RMSE_val = math.sqrt(MSE_val)
@@ -122,35 +122,66 @@ def remove_outlier_ZScore(df):
     return df_final
 
 
-CURRENT_DIR = os.path.dirname(__file__)
-input_path = os.path.join(CURRENT_DIR,"datasets/centralized_database_new.csv")
-data = pd.read_csv(input_path)
-
-#data = data[["pm2.5","pm10","co","so2","no2","o3","temp","feelslike","humidity","precip","windspeed","cases"]]
-data = data[["pm2.5","o3","temp","humidity","precip","windspeed","cases"]]
-#data = remove_outlier_IQR(data)
-
-x_data = data[["pm2.5","o3","temp","humidity","precip","windspeed"]]
-y_data = data[["cases"]]
-
-#feature_drop(data)
+# ----------------------------------------------------------------------------------------------
 
 degree = 2
-x_data = x_data.to_numpy()
-y_data = y_data.to_numpy()
+CURRENT_DIR = os.path.dirname(__file__)
 
-preprocess_dataset(x_data,y_data)
+def preprocess_streamlit(x_data, y_data):
+    x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.2,random_state=0)
+    scale = StandardScaler()
+    x_train = scale.fit_transform(x_train); x_test = scale.fit_transform(x_test)
+    y_train = scale.fit_transform(y_train); y_test = scale.fit_transform(y_test)
 
-"""
-#for visualization of curve fitting
-parameters = ["pm2.5","pm10","co","so2","no2","o3","temp","feelslike","humidity","precip","windspeed"]
-for idx in range(len(parameters)):
-    x_data = data[[parameters[idx]]]
+    #change testing set to realtime data
+    data_2 = pd.read_csv('datasets/current_aq_and_mf.csv')
+    realtime_data = data_2[["pm2.5","o3","temp","humidity","precip","windspeed"]]
+    realtime_data = scale.fit_transform(realtime_data)
+    realtime_data = scale.inverse_transform(realtime_data)
+    y_test_sample = [[200]] #placeholder
+    y_test_sample = scale.fit_transform(y_test_sample)
+    y_test_sample = scale.inverse_transform(y_test_sample)
+
+    y_pred = polynomial_regression(x_train,realtime_data,y_train,y_test_sample)
+    
+    y_test_sample = scale.inverse_transform(y_test)
+    y_pred = scale.inverse_transform(y_pred)
+    
+    plot(y_test_sample, y_pred)
+    #performance_metric(x_data,y_test,y_pred)
+    return y_test_sample, y_pred
+
+def streamlit_polynomial_reg():
+    input_path = os.path.join(CURRENT_DIR,"datasets/centralized_database_new.csv")
+    data = pd.read_csv(input_path)
+    data = data[["pm2.5","o3","temp","humidity","precip","windspeed","cases"]]
+    x_data = data[["pm2.5","o3","temp","humidity","precip","windspeed"]]
     y_data = data[["cases"]]
+
     x_data = x_data.to_numpy()
     y_data = y_data.to_numpy()
 
-    title = "figure " + str(idx+1) + "-" + parameters[idx] + " polynomial regression_" + "degree " + str(degree) + ".png"
-    
-    curve_visualization(x_data,y_data,parameters[idx],degree,title)   
-"""
+
+    actual, predicted = preprocess_streamlit(x_data,y_data)
+    return actual, predicted
+
+def main():
+    input_path = os.path.join(CURRENT_DIR,"datasets/centralized_database_new.csv")
+    data = pd.read_csv(input_path)
+
+    #data = data[["pm2.5","pm10","co","so2","no2","o3","temp","feelslike","humidity","precip","windspeed","cases"]]
+    data = data[["pm2.5","o3","temp","humidity","precip","windspeed","cases"]]
+    #data = remove_outlier_IQR(data)
+
+    x_data = data[["pm2.5","o3","temp","humidity","precip","windspeed"]]
+    y_data = data[["cases"]]
+
+    #feature_drop(data)
+
+    x_data = x_data.to_numpy()
+    y_data = y_data.to_numpy()
+
+    preprocess_dataset(x_data,y_data)
+
+if __name__ == "__main__":
+    main()

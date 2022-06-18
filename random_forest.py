@@ -1,14 +1,13 @@
-from random import Random
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
-from sklearn.feature_selection import RFECV
 from sklearn.model_selection import train_test_split
 import math
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import streamlit
 
 
 def split_data(x_data, y_data):
@@ -70,7 +69,7 @@ def rf_model(x_train,y_train,x_test,y_test):
     #best params from Grid and Randomized Search CV
     model = RandomForestRegressor(bootstrap=True, max_depth=70, max_features='log2', 
                                 min_samples_leaf=2, min_samples_split=3, n_estimators=1500, random_state=0,
-                                verbose=2, n_jobs=-1)
+                                )
     model.fit(x_train, np.ravel(y_train))
     y_pred = model.predict(x_test)
 
@@ -113,7 +112,42 @@ def performance_metric(y_test,y_pred, x_data):
         print("ADJ R2 :", ADJR2_val)
         print("\n")
 
-def main_rf():
+def streamlit_random_forest():
+  #read database
+  data = pd.read_csv('datasets/centralized_database_new.csv')
+
+  #get input and output features
+  features = ["temp", "feelslike", "humidity", "windspeed", "precip", "pm2.5", "pm10","co","so2","no2","o3"]
+  x_data = data[features]
+  y_data = data.iloc[:,12:].values
+
+  #reshape data
+  scaler = StandardScaler()
+
+  x_data = scaler.fit_transform(x_data)
+  y_data = scaler.fit_transform(y_data)
+
+  x_data = scaler.inverse_transform(x_data)
+  y_data = scaler.inverse_transform(y_data)
+
+  #build and run model
+  rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
+
+  title = "Random Forest Plot"
+
+  #change testing set to realtime data
+  data_2 = pd.read_csv('datasets/current_aq_and_mf.csv')
+  realtime_data = data_2[features]
+  realtime_data = scaler.fit_transform(realtime_data)
+  realtime_data = scaler.inverse_transform(realtime_data)
+  y_test = [[200]] #placeholder
+
+  prediction = rf_model(rf_x_train, rf_y_train, realtime_data, y_test)
+  #plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+  #performance_metric(prediction[0], prediction[1], x_data)
+  return prediction[0], prediction[1]
+
+def main():
   #read database
   data = pd.read_csv('datasets/centralized_database_new.csv')
 
@@ -130,6 +164,7 @@ def main_rf():
   x_data = scaler.inverse_transform(x_data)
   y_data = scaler.inverse_transform(y_data)
 
+
   #build and run model
   rf_x_train, rf_x_test, rf_y_train, rf_y_test = split_data(x_data, y_data)
 
@@ -139,13 +174,7 @@ def main_rf():
   plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
   performance_metric(prediction[0], prediction[1], x_data)
 
-  return prediction[0],prediction[1]
 
-main_rf()
-
-
-    
-
-
-
-                     
+if __name__ == "__main__":
+  main()
+                

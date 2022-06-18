@@ -3,10 +3,11 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from vega_datasets import data
-from random_forest import main_func
 import datetime
-import time
 from PIL import Image
+from linear_reg import streamlit_linear_reg
+from polynomial_reg import streamlit_polynomial_reg
+from random_forest import streamlit_random_forest
 
 
 @st.cache
@@ -18,21 +19,34 @@ def load_data():
   return data
 
 st.title('COVID-19 Cases Prediction')
-c1, c2 = st.columns(2)
-cases_header = c1.subheader("Projected Number of Cases")
-area = c2.subheader("Manila, Philippines")
-
-c3, c4 = st.columns(2)
-cases_value = c3.header("98")
-realtime_date = c4.header(datetime.datetime.now().date())
-st.caption("Disclaimer: Real time COVID-19 cases prediction for visualization purposes only. Gathers real time data from APIs and generates a prediction number based from the trained models using data from November 25, 2020 to May 7, 2022.")
 
 option = st.selectbox(
      'Choose ML model for prediction on number of cases:',
      ('Linear Regression', 'Polynomial Regression', 'Random Forest (recommended)'))
 
-if st.checkbox('Show prediction plot'):
-    st.subheader('Raw data')
+if option == "Linear Regression":
+    actual, predicted = streamlit_linear_reg()
+    projection = int(predicted[0][0])
+
+if option == "Polynomial Regression":
+    actual, predicted = streamlit_polynomial_reg()
+    projection = int(predicted[0][0])
+
+if option == "Random Forest (recommended)":
+    actual, predicted = streamlit_random_forest()
+    projection = int(predicted[0])
+    
+
+c1, c2 = st.columns(2)
+area = c2.subheader("Manila, Philippines")
+cases_header = c1.subheader("Projected Number of Cases")
+
+c3, c4 = st.columns(2)
+cases_value = c3.header(projection)
+realtime_date = c4.header(datetime.datetime.now().date())
+st.caption("Disclaimer: Real time COVID-19 cases prediction for visualization purposes only. Gathers real time data from APIs and generates a prediction number based from the trained models using data from November 25, 2020 to May 7, 2022.")
+
+
 
 data_load_state = st.text("Fetching data...")
 data = load_data()
