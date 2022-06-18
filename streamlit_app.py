@@ -31,10 +31,12 @@ option = st.selectbox(
      'Choose ML model for prediction on number of cases:',
      ('Linear Regression', 'Polynomial Regression', 'Random Forest (recommended)'))
 
+if st.checkbox('Show prediction plot'):
+    st.subheader('Raw data')
 
 data_load_state = st.text("Fetching data...")
 data = load_data()
-data_load_state.text("Showing data:") 
+data_load_state.text("Showing daily COVID-19 cases graph:") 
 
 
 source = pd.DataFrame(data["cases"].to_numpy(), columns=['cases'], index=data['date'])
@@ -84,7 +86,6 @@ alt.layer(
 )
 
 st.altair_chart(alt.layer(line, selectors, points, rules, text), use_container_width=True)
-
 
 
 c5, c6 = st.columns(2)
