@@ -5,9 +5,9 @@ import altair as alt
 from vega_datasets import data
 import datetime
 from PIL import Image
-from linear_reg import streamlit_linear_reg
-from polynomial_reg import streamlit_polynomial_reg
-from random_forest import streamlit_random_forest
+from linear_reg import streamlit_linear_reg, main_lin
+from polynomial_reg import streamlit_polynomial_reg, main_poly
+from random_forest import streamlit_random_forest, main_rf
 
 
 @st.cache
@@ -35,6 +35,63 @@ if option == "Polynomial Regression":
 if option == "Random Forest (recommended)":
     actual, predicted = streamlit_random_forest()
     projection = int(predicted[0])
+
+#add options for the other two models
+actual, predicted = main_rf()
+output = pd.DataFrame(actual,predicted)
+output[0] = actual
+output[1] = predicted
+output.index = list(range(len(output)))
+
+if st.checkbox('Show prediction plot'):
+    source = pd.DataFrame(output.to_numpy(), columns=['actual', 'predicted'], index=pd.RangeIndex(len(actual), name='points'))
+    source = source.reset_index().melt('points', var_name='category', value_name='cases')
+
+    # Create a selection that chooses the nearest point & selects based on x-value
+    nearest = alt.selection(type='single', nearest=True, on='mouseover',
+                            fields=['points'], empty='none')
+
+    # The basic line
+    line = alt.Chart(source).mark_line(interpolate='basis').encode(
+        x='points:Q',
+        y='cases:Q',
+        color='category:N'
+    )
+
+    # Transparent selectors across the chart. This is what tells us
+    # the x-value of the cursor
+    selectors = alt.Chart(source).mark_point().encode(
+        x='points:Q',
+        opacity=alt.value(0),
+    ).add_selection(
+        nearest
+    )
+
+    # Draw points on the line, and highlight based on selection
+    points = line.mark_point().encode(
+        opacity=alt.condition(nearest, alt.value(1), alt.value(0))
+    )
+
+    # Draw text labels near the points, and highlight based on selection
+    text = line.mark_text(align='left', dx=5, dy=-5).encode(
+        text=alt.condition(nearest, 'cases:Q', alt.value(' '))
+    )
+
+    # Draw a rule at the location of the selection
+    rules = alt.Chart(source).mark_rule(color='gray').encode(
+        x='points:Q',
+    ).transform_filter(
+        nearest
+    )
+
+    # Put the five layers into a chart and bind the data
+    alt.layer(
+        line, selectors, points, rules, text
+    ).properties(
+        width=800, height=500
+    )
+
+    st.altair_chart(alt.layer(line, selectors, points, rules, text), use_container_width=True)
     
 
 c1, c2 = st.columns(2)

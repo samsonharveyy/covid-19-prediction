@@ -147,7 +147,7 @@ def streamlit_random_forest():
   #performance_metric(prediction[0], prediction[1], x_data)
   return prediction[0], prediction[1]
 
-def main():
+def main_rf():
   #read database
   data = pd.read_csv('datasets/centralized_database_new.csv')
 
@@ -171,10 +171,9 @@ def main():
   title = "Random Forest Plot"
 
   prediction = rf_model(rf_x_train, rf_y_train, rf_x_test, rf_y_test)
-  plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
-  performance_metric(prediction[0], prediction[1], x_data)
+  #plot_data(range(len(prediction[0])), prediction[0], prediction[1], title)
+  #performance_metric(prediction[0], prediction[1], x_data)
+  return prediction[0], prediction[1]
 
 
-if __name__ == "__main__":
-  main()
                 

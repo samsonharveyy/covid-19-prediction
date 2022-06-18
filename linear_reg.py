@@ -104,7 +104,7 @@ def streamlit_linear_reg():
 
     return prediction[0], prediction[1]
 
-def main():
+def main_lin():
     CURRENT_DIR = os.path.dirname(__file__)
     file_path = os.path.join(CURRENT_DIR, "datasets/centralized_database_new.csv")
 
@@ -131,10 +131,8 @@ def main():
     title = "[No Outliers] temp + o3 vs cases"
     prediction = linear_model(X_train,y_train,X_test,y_test)
     #plot_data(range(len(prediction[0])),prediction[0],prediction[1],title)
-    plot_data(range(len(prediction[0])),prediction[0],prediction[1],title)
-    performance_metric(x_data,prediction[0],prediction[1])
+    #plot_data(range(len(prediction[0])),prediction[0],prediction[1],title)
+    #performance_metric(x_data,prediction[0],prediction[1])
 
-    print(df.shape)
+    return prediction
 
-if __name__ == "__main__":
-    main()

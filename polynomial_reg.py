@@ -34,6 +34,7 @@ def preprocess_dataset(x_data,y_data):
     
     plot(y_test,y_pred)
     performance_metric(x_data,y_test,y_pred)
+    return y_test, y_pred
 
 def curve_visualization(x_data,y_data,param,degree,title):
     x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.2,random_state=0)
@@ -165,7 +166,7 @@ def streamlit_polynomial_reg():
     actual, predicted = preprocess_streamlit(x_data,y_data)
     return actual, predicted
 
-def main():
+def main_poly():
     input_path = os.path.join(CURRENT_DIR,"datasets/centralized_database_new.csv")
     data = pd.read_csv(input_path)
 
@@ -181,7 +182,5 @@ def main():
     x_data = x_data.to_numpy()
     y_data = y_data.to_numpy()
 
-    preprocess_dataset(x_data,y_data)
-
-if __name__ == "__main__":
-    main()
+    actual, predicted = preprocess_dataset(x_data,y_data)
+    return actual, predicted
