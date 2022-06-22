@@ -1,0 +1,13 @@
+pandas
+matplotlib
+numpy
+requests
+json 
+csv
+dotenv
+seaborn
+scikit-learn
+streamlit
+Pillow
+altair
+vega_datasets

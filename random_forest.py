@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 import math
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
-import streamlit
 
 
 def split_data(x_data, y_data):
